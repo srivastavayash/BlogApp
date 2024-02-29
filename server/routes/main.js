@@ -5,7 +5,11 @@ const { parse } = require('dotenv');
 
 
 
-// Route to get/Home
+/**
+ * GET
+ * Home
+ */
+
 router.get('/', async (req, res) => {
     try {
         const locals = {
@@ -30,7 +34,8 @@ router.get('/', async (req, res) => {
             locals,
             data,
             current: page,
-            nextPage: hasNextPage ? nextPage : null
+            nextPage: hasNextPage ? nextPage : null,
+            currentRoute: '/'
         });
     } catch (err) {
         console.log(err);
@@ -39,30 +44,79 @@ router.get('/', async (req, res) => {
 });
 
 
-// router.get('/', async (req, res) => {
-//     const locals = {
-//         title: "BlogApp",
-//         decription: "Blogging application based NODEJS,EXPRESSJS and MONGODB"
-//     }
-//     try {
-//         const data = await Post.find();
-//         res.render('index', { locals, data });
-//     } catch (err) {
-//         console.log(err);
-//     }
+/**
+ * GET
+ * POST :id
+ */
 
-// });
+router.get('/post/:id', async (req, res) => {
+
+    try {
+
+        let slug = req.params.id;
+
+        const data = await Post.findById({ _id: slug });
+
+        const locals = {
+            title: data.title,
+            decription: "Blogging application based NODEJS,EXPRESSJS and MONGODB"
+        }
+
+        res.render('post', {
+            locals, data,
+            currentRoute: `/post/${slug}`
+        });
+    } catch (err) {
+        console.log(err);
+    }
+
+});
+
+
+
+
+/**
+ * GET
+ * POST - searchTerm
+ */
+
+router.post('/search', async (req, res) => {
+
+    try {
+        const locals = {
+            title: "NodeJs Blog",
+            description: "Simple Blog created with NodeJs, Express & MongoDb."
+        }
+
+        let searchTerm = req.body.searchTerm;
+        const searchNoSpecialChar = searchTerm.replace(/[^a-zA-Z0-9]/g, "")
+        const data = await Post.find({
+            $or: [
+                { title: { $regex: new RegExp(searchNoSpecialChar, 'i') } },
+                { body: { $regex: new RegExp(searchNoSpecialChar, 'i') } }
+            ]
+        });
+        res.render('search', { locals, data, currentRoute: '/' });
+    } catch (error) {
+        console.log(error);
+    }
+
+});
 
 
 
 
 
 router.get('/about', (req, res) => {
-    res.render('about');
+    res.render('about', {
+        currentRoute: '/about'
+    });
 });
 
 router.get('/contact', (req, res) => {
-    res.render('contact');
+    res.render('contact',{
+        currentRoute: '/contact'
+    });
 });
 
 
@@ -115,5 +169,20 @@ router.get('/contact', (req, res) => {
 // insertPostData();
 
 
+//Get-Request
+// router.get('', async (req, res) => {
+//   const locals = {
+//     title: "NodeJs Blog",
+//     description: "Simple Blog created with NodeJs, Express & MongoDb."
+//   }
+
+//   try {
+//     const data = await Post.find();
+//     res.render('index', { locals, data });
+//   } catch (error) {
+//     console.log(error);
+//   }
+
+// });
 
 module.exports = router;

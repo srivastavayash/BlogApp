@@ -173,7 +173,7 @@ img {
     text-decoration: underline;
 }
 
-.header__nav ul a:active {
+.header__nav ul a.active {
     color: var(--gray);
 }
 
@@ -250,7 +250,7 @@ img {
 }
 
 .article-ul:hover li {
-    filter: blur(3px);
+    filter: blur(1px);
 }
 
 .article-ul:hover li:hover {
@@ -306,6 +306,7 @@ img {
     right: 0;
     color: var(--gray-light);
     padding: 15px;
+    cursor: pointer;
 }
 
 /* Dashboard Admin */
